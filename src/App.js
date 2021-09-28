@@ -165,6 +165,10 @@ function Deposit() {
       window.alert("Please enter a number");
       return; 
     }
+    if (transaction < 0) {
+      window.alert("Please enter a positive number.");
+      return; 
+    }
     setBal(newBal);
     setShow(false);  
   }
@@ -202,28 +206,60 @@ function Deposit() {
 
 function Withdraw() {
   const [bal, setBal] = React.useState(100);
-  const [transaction, setTransaction] = React.useState();
+  const [transaction, setTransaction] = React.useState('');
+  let [show, setShow]         = React.useState(true);
+
+
   function handleSubmit () {
+    if (isNaN(transaction)) {
+      window.alert("Please enter a number");
+      return; 
+    }
+    if (transaction > bal) {
+      window.alert("Account Overdraft: You have insufficient funds for this withdrawal.");
+      return;
+    } 
+    if (transaction < 0) {
+      window.alert("Please enter a positive number.");
+      return; 
+    }
     let newBal = Number(bal) - Number(transaction);
     setBal(newBal); 
+    setShow(false);  
   }
+
+  function clearForm(){
+    setTransaction('');
+    setShow(true);
+  }
+
+
   return (
     <>
   <h2>Current Balance: ${bal}</h2>
 
-  
-  <Card className="text-center" bg="light">
-        <Card.Header>Withdraw Funds</Card.Header>
-        <Card.Body>
-          <Card.Title>Enter an amount in $(USD)</Card.Title>
-          <Card.Text>
-          <input type="number" className="form-control" id="deposit" placeholder="Enter an amount" value={transaction} onChange={e => setTransaction(e.currentTarget.value)} /><br/>
-                    
-                 
-          </Card.Text>
-          <Button variant="primary" onClick={handleSubmit}>Submit</Button>
-        </Card.Body>
-      </Card>
+        {show ? <>
+                  <Card className="text-center" bg="light">
+                      <Card.Header>Withdraw Funds</Card.Header>
+                      <Card.Body>
+                        <Card.Title>Enter an amount in $(USD)</Card.Title>
+                        <Card.Text>
+                        <input type="number" className="form-control" id="deposit" placeholder="Enter an amount" value={transaction} onChange={e => setTransaction(e.currentTarget.value)} /><br/>
+                                  
+                              
+                        </Card.Text>
+                        {transaction.length > 0 && 
+                          <Button variant="primary" onClick={handleSubmit}>Submit</Button>
+                        }
+                      </Card.Body>
+                    </Card>
+                </>
+                :
+                <>
+                <h5>Success</h5>
+                  <Button variant="primary" onClick={clearForm}>Make another withdrawal</Button>
+                </>
+          }
   </>
   );
 }
